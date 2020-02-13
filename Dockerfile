@@ -1,10 +1,10 @@
-FROM golang:1.14rc1-alpine3.11 as build
+FROM golang:1.13-buster as build
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
-COPY . .
-RUN go build -o main ./*.go
+COPY . ./
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/main ./*.go
 
-FROM alpine
-COPY --from=build /app/main .
-CMD ["./main"]
+FROM gcr.io/distroless/base-debian10
+COPY --from=build /app/main ./
+CMD ["/main"]
