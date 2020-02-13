@@ -1,0 +1,17 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: trendyol-consul-template-injector-webhook
+webhooks:
+  - name: trendyol-consul-template-injector-server-service.admission.svc
+    clientConfig:
+      service:
+        name: trendyol-consul-template-injector-server-service
+        namespace: admission
+        path: "/mutate"
+      caBundle: ${CA_PEM_B64}
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]

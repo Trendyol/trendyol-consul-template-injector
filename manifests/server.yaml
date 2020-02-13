@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trendyol-consul-template-injector-server
+  namespace: admission
+  labels:
+    app: trendyol-consul-template-injector-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trendyol-consul-template-injector-server
+  template:
+    metadata:
+      labels:
+        app: trendyol-consul-template-injector-server
+    spec:
+      containers:
+        - name: server
+          image: trendyoltech/trendyol-consul-template-injector-server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8443
+              name: http
+          volumeMounts:
+            - name: trendyol-consul-template-injector-server-tls-certs
+              mountPath: /run/secrets/tls
+              readOnly: true
+      volumes:
+        - name: trendyol-consul-template-injector-server-tls-certs
+          secret:
+            secretName: trendyol-consul-template-injector-server-tls-secret
+      imagePullSecrets:
+        - name: regcred

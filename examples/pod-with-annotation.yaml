@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: admission
+  name: busybox-consul-template-cm
+data:
+  init.tmpl: |
+    hello: {{ key "hello/world" }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: admission
+  name: busybox
+  labels:
+    app: busybox
+  annotations:
+    trendyol.com/consul-template-inject: "true"
+    trendyol.com/consul-template-consul-addr: "consul-consul-server.default:8500"
+    trendyol.com/consul-template-template-config-map-name: "busybox-consul-template-cm"
+    trendyol.com/consul-template-output-file: "/var/busybox/config.txt"
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do cat /var/busybox/config.txt; sleep 2; done"]
