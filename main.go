@@ -13,13 +13,11 @@ const (
 )
 
 func main() {
-
-
 	certPath := filepath.Join(tlsDir, tlsCertFile)
 	keyPath := filepath.Join(tlsDir, tlsKeyFile)
 
 	mux := http.NewServeMux()
-	mux.Handle("/mutate", patchHttpHandler(generatePodPatches))
+	mux.Handle("/mutate", NewPatchHandler().generatePatchOperations())
 
 	server := &http.Server{
 		Addr:    ":8443",

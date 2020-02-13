@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestPreCheckFunctionalityOfPodAnnotationsInError(t *testing.T) {
+func TestShouldThrowErrorWhenAnnotationValueIsNotParseable(t *testing.T) {
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Annotations: map[string]string{
@@ -16,7 +16,7 @@ func TestPreCheckFunctionalityOfPodAnnotationsInError(t *testing.T) {
 		},
 	}
 
-	_, err := New(pod)
+	_, err := newPodAnnotations(pod)
 
 	assert.EqualError(t, err, "")
 }
@@ -31,7 +31,7 @@ func TestPreCheckFunctionalityOfPodAnnotations(t *testing.T) {
 		},
 	}
 
-	podAnnotations, err := New(pod)
+	podAnnotations, err := newPodAnnotations(pod)
 
 	assert.NoError(t, err)
 	assert.Equal(t, podAnnotations["trendyol.com/consul-template-inject"].Value, "true")

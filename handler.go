@@ -18,39 +18,33 @@ var (
 	jsonContentType       = "application/json"
 )
 
-type patchOperation struct {
-	Op    string      `json:"op"`
-	Path  string      `json:"path"`
-	Value interface{} `json:"value,omitempty"`
+type PatchHandler struct{}
+
+func NewPatchHandler() *PatchHandler {
+	return &PatchHandler{}
 }
 
-type patchOperationGeneratorFunc func(*v1beta1.AdmissionRequest) ([]patchOperation, error)
-
-func patchHttpHandler(m patchOperationGeneratorFunc) http.Handler {
+func (p *PatchHandler) generatePatchOperations() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		patchOperationGeneratorFuncWrapper(w, r, m)
+		log.Print("Handling webhook request ...")
+
+		var writeErr error
+		if bytes, err := doPatchOperationGeneratorFunc(w, r); err != nil {
+			log.Printf("Error handling webhook request: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			_, writeErr = w.Write([]byte(err.Error()))
+		} else {
+			log.Print("Webhook request handled successfully")
+			_, writeErr = w.Write(bytes)
+		}
+
+		if writeErr != nil {
+			log.Printf("Could not write response: %v", writeErr)
+		}
 	})
 }
 
-func patchOperationGeneratorFuncWrapper(w http.ResponseWriter, r *http.Request, m patchOperationGeneratorFunc) {
-	log.Print("Handling webhook request ...")
-
-	var writeErr error
-	if bytes, err := executePatchOperationGeneratorFunc(w, r, m); err != nil {
-		log.Printf("Error handling webhook request: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		_, writeErr = w.Write([]byte(err.Error()))
-	} else {
-		log.Print("Webhook request handled successfully")
-		_, writeErr = w.Write(bytes)
-	}
-
-	if writeErr != nil {
-		log.Printf("Could not write response: %v", writeErr)
-	}
-}
-
-func executePatchOperationGeneratorFunc(w http.ResponseWriter, r *http.Request, mf patchOperationGeneratorFunc) ([]byte, error) {
+func doPatchOperationGeneratorFunc(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil, fmt.Errorf("invalid method %s, only POST requests are allowed", r.Method)
@@ -87,7 +81,7 @@ func executePatchOperationGeneratorFunc(w http.ResponseWriter, r *http.Request, 
 	var patchOperations []patchOperation
 
 	if !isKubeNamespace(admissionReviewReq.Request.Namespace) {
-		patchOperations, err = mf(admissionReviewReq.Request)
+		patchOperations, err = generatePodPatches(admissionReviewReq.Request)
 	}
 
 	if err != nil {

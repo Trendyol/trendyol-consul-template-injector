@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-type Patches []patchOperation
+type patches []patchOperation
 
-func (p Patches) patchReport() {
+func (p patches) patchReport() {
 	log.Printf("--------------APPLYING PATCHES ARE----------------------")
 	for _, patch := range p {
 		log.Printf("Operation: %s \n", patch.Op)
@@ -17,7 +17,7 @@ func (p Patches) patchReport() {
 	log.Printf("--------------------------------------------------------")
 }
 
-func (p *Patches) addVolumes(pod *corev1.Pod, volumes []corev1.Volume) {
+func (p *patches) addVolumes(pod *corev1.Pod, volumes []corev1.Volume) {
 	first := len(pod.Spec.Volumes) == 0
 	path := "/spec/volumes"
 	var value interface{}
@@ -39,7 +39,7 @@ func (p *Patches) addVolumes(pod *corev1.Pod, volumes []corev1.Volume) {
 	}
 }
 
-func (p *Patches) addContainers(pod *corev1.Pod, containers []corev1.Container) {
+func (p *patches) addContainers(pod *corev1.Pod, containers []corev1.Container) {
 	first := len(pod.Spec.Containers) == 0
 	path := "/spec/containers"
 	var value interface{}
@@ -61,7 +61,7 @@ func (p *Patches) addContainers(pod *corev1.Pod, containers []corev1.Container) 
 	}
 }
 
-func (p *Patches) addInitContainers(pod *corev1.Pod, containers []corev1.Container) {
+func (p *patches) addInitContainers(pod *corev1.Pod, containers []corev1.Container) {
 	first := len(pod.Spec.InitContainers) == 0
 	path := "/spec/initContainers"
 	var value interface{}
@@ -83,7 +83,7 @@ func (p *Patches) addInitContainers(pod *corev1.Pod, containers []corev1.Contain
 	}
 }
 
-func (p *Patches) addVolumeMounts(pod *corev1.Pod, vms []corev1.VolumeMount) {
+func (p *patches) addVolumeMounts(pod *corev1.Pod, vms []corev1.VolumeMount) {
 	first := len(pod.Spec.Containers[0].VolumeMounts) == 0
 	path := "/spec/containers/0/volumeMounts"
 	var value interface{}

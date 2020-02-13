@@ -12,8 +12,6 @@ kind: Pod
 metadata:
   namespace: admission
   name: busybox
-  labels:
-    app: busybox
   annotations:
     trendyol.com/consul-template-inject: "true"
     trendyol.com/consul-template-consul-addr: "consul-consul-server.default:8500"

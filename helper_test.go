@@ -7,7 +7,7 @@ import (
 )
 
 func TestPatchHelperVolumeAdd(t *testing.T) {
-	p := Patches{}
+	p := patches{}
 	p.addVolumes(&corev1.Pod{}, []corev1.Volume{{Name: "Test"}})
 
 	assert.Equal(t, 1, len(p))
