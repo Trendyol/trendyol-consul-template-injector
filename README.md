@@ -9,7 +9,17 @@
   </a>
 </p>
 
-> This projects is an implementation of &#34;Admission Controllers&#34; concept in Kubernetes , checkout this page to get more detail about admission https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/   
+> This projects is an implementation of &#34;Admission Webhook Controllers&#34; concept in Kubernetes , checkout this page to get more detail about admission https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/   
+
+> trendyol-consul-template-injector injects trendyol-consul-template image (https://hub.docker.com/r/trendyoltech/trendyol-consul-template) as a sidecar container into your application's pod.
+
+> It is configured using these annotations:
+* "trendyol.com/consul-template-inject" -> "true" for enabling sidecar injection
+* "trendyol.com/consul-template-consul-addr" -> consul url
+* "trendyol.com/consul-template-template-config-map-name" -> configmap name which contains configuration template file which is needed by consul-template for rendering configuration file for your application
+* "trendyol.com/consul-template-output-file" -> path to configuration file which is rendered by the consul-template
+
+> Example pod with annotations and config map are given in examples folder.
 
 ### 🏠 [Homepage](https://github.com/Trendyol/trendyol-consul-template-injector)
 
