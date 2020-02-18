@@ -46,6 +46,12 @@ func generatePodPatches(req *v1beta1.AdmissionRequest) (patches, error) {
 	}
 
 	patches := patches{}
+	injectStatus := podAnnotations[ConsulTemplateInjectAnnotation].Value
+
+	if injectStatus == "false" {
+		log.Printf("config injection status false for pod: %s", pod.Name)
+		return patches, nil
+	}
 
 	templateFile := "/conf/init.tmpl"
 	outputFile := podAnnotations[ConsulTemplateFilePathAnnotation].Value
